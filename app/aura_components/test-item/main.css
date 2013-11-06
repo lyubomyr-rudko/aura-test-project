@@ -1,0 +1,15 @@
+.test-item {
+	color: red;
+	text-decoration: underline;
+	width: 250px;
+	float: left;
+	margin-left: 10px;
+}
+
+.test-item .inner {
+	height: 300px;
+}
+
+body {
+	background: none;
+}
