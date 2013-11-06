@@ -8,9 +8,11 @@ define(['collections/exams', 'module', 'underscore'], function (ExamsCollection,
         initialize: function() {
             this.render();
             this.sandbox.utils.loadCssForModule(module);
+            ExamsCollection.singleInstance.on('add', this.refreshList, this);
+        },
 
-            // debugger;
-            this.sandbox.on("examsList.refresh", this.render, this);
+        refreshList: function () {
+            this.render(ExamsCollection.singleInstance.toJSON());
         },
 
         render: function(examsList) {

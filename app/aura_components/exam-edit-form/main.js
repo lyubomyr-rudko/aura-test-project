@@ -1,4 +1,4 @@
-define(['collections/exams', 'module', 'underscore'], function (ExamCollection, module, _) {
+define(['collections/exams', 'module', 'underscore'], function (ExamsCollection, module, _) {
     return {
         templates: ['tpl'],
         View: {
@@ -18,13 +18,13 @@ define(['collections/exams', 'module', 'underscore'], function (ExamCollection, 
         render: function() {
             // this.html(this.renderTemplate('tpl', this.model.toJSON()));
             this.html(this.renderTemplate('tpl', {title: 'Hello'}));
-            this.examsCollection = new ExamCollection();
-            this.examsCollection.on('add', this.onAddExam, this);
+            // this.examsCollection = new ExamCollection();
+            // this.examsCollection.on('add', this.onAddExam, this);
         },
 
-        onAddExam: function () {
-            this.sandbox.emit('examsList.refresh', this.examsCollection.toJSON());
-        },
+        // onAddExam: function () {
+        //     this.sandbox.emit('examsList.refresh', this.examsCollection.toJSON());
+        // },
 
         onSubmit: function(e) {
             var examTitleField = this.$el.find('input[name=title]'),
@@ -36,7 +36,7 @@ define(['collections/exams', 'module', 'underscore'], function (ExamCollection, 
                     description: examDescription
                 };
 
-            this.examsCollection.create(exam);
+            ExamsCollection.singleInstance.create(exam);
         }
     };
 });
