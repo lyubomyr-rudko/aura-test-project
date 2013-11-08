@@ -1,9 +1,9 @@
-define(['module', 'underscore'], function (module, _) {
+define(['module', 'underscore'], function(module, _) {
     return {
 		templates: ['tpl'],
 		View: {
 			events: {
-				'click a[data-toggle=tab]': function (e) {
+				'click a[data-toggle=tab]': function(e) {
 					var currentBtn = $(e.currentTarget).parent(),
 						currentTab = this.$el.find($(e.currentTarget).attr('href')),
 						activeBtn = this.$el.find('li.active'),

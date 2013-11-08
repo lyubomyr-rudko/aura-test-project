@@ -1,4 +1,4 @@
-define(['collections/exams', 'module', 'underscore'], function (ExamsCollection, module, _) {
+define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, module, _) {
     return {
         templates: ['tpl'],
         View: {
@@ -8,10 +8,11 @@ define(['collections/exams', 'module', 'underscore'], function (ExamsCollection,
         initialize: function() {
             this.render();
             this.sandbox.utils.loadCssForModule(module);
-            ExamsCollection.singleInstance.on('add', this.refreshList, this);
+            ExamsCollection.singleInstance.on('change reset add remove', this.refreshList, this);
+            ExamsCollection.singleInstance.fetch();
         },
 
-        refreshList: function () {
+        refreshList: function() {
             this.render(ExamsCollection.singleInstance.toJSON());
         },
 

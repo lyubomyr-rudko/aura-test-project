@@ -5,16 +5,16 @@ define(['backbone'], function (Backbone) {
 
     Router = Backbone.Router.extend({
         routes: {
-            "":                 "home"
+            '': 'home',
+            ':model(/:action)(/:id)': 'admin'
+
             // ":widget/:action/:id":    "employee"
         }
     });
 
     router = new Router();
 
-    router.on('route:home', function () { console.log('home route'); });
-
-    Backbone.history.start();
+    // Backbone.history.start();
 
     return {
         initialize: function (app) {

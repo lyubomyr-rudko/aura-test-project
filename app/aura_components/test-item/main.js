@@ -1,4 +1,4 @@
-define(['module', 'underscore'], function (module, _) {
+define(['module', 'underscore'], function(module, _) {
     return {
 		templates: ['tpl'],
 

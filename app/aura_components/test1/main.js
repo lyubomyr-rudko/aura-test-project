@@ -1,4 +1,4 @@
-define(['module', 'underscore'], function (module, _) {
+define(['module', 'underscore'], function(module, _) {
 	var moduleUri = module.uri;
 
 	function loadModuleCss (moduleUri) {
@@ -7,7 +7,7 @@ define(['module', 'underscore'], function (module, _) {
 			cssFileUri;
 
 		moduleUriParts = moduleUri.split('/');
-		moduleUriParts = _.filter(moduleUriParts, function (item) { return item !== '.'; });
+		moduleUriParts = _.filter(moduleUriParts, function(item) { return item !== '.'; });
 		moduleUriParts.pop();
 		folderUri = moduleUriParts.join('/');
 		cssFileUri = folderUri + '/main.css';

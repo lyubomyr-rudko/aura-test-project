@@ -4,10 +4,10 @@ define({
 
   View: {
     events: {
-      'click input[type=submit]': function (e) {
+      'click input[type=submit]': function(e) {
         return false;
       },
-      'keyup input': function (e) {
+      'keyup input': function(e) {
         if (e.which === 13) {
           var usernameField = this.$el.find('input[name=username]'),
             passwordField = this.$el.find('input[name=password]'),
@@ -20,10 +20,10 @@ define({
           loginEventObj = {
             username: username,
             password: password,
-            onSuccess: function () {
+            onSuccess: function() {
               this.sandbox.emit('user.showInfo', loginEventObj);
             },
-            onFailure: function () {
+            onFailure: function() {
               //show failure message
             }
           };

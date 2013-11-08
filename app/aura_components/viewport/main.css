@@ -1,0 +1,7 @@
+.viewport .nav-item {
+	display: none;
+}
+
+.viewport .nav-item.active {
+	display: block;
+}
