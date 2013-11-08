@@ -4,17 +4,29 @@
     var express = require('express'),
         http = require('http'),
         path = require('path'),
+        fs = require("fs"),
         app = express(),
         host = 'localhost',
         port = 8188,
-        stubData;
+        stubData,
+        filename = "./dataStore.json";
+
+    function saveData () {
+        fs.writeFile( filename, JSON.stringify( stubData ), "utf8", function () {} );
+    }
+
+    function getData () {
+        stubData = require(filename);
+    }
 
     app.configure(function () {
         app.use(express.bodyParser());
         app.use(express['static'](__dirname + '/app'));
     });
     
-    stubData = {
+    getData();
+
+    stubData = stubData || {
         exams: {
             1: {title: 'Math Exam', id: 1},
             2: {title: 'History Exam', id: 2}
@@ -34,18 +46,19 @@
     };
 
     app.post('/api/exams', function (req, res) {
-        console.log(req);
         // res.end(JSON.stringify({success: true}));
         var exam = req.body;
         //TODO: add backend validation here
         exam.id = stubData.nextExamId++;
         stubData.exams[exam.id] = exam;
         res.json(exam);
+        saveData();
     });
 
     app.put('api/exams/:id', function (req, res) {
         stubData.exam[req.params.id] = req.body;
         res.json(req.body);
+        saveData();
     });
     
     app.get('/api/exams', function (req, res) {
@@ -75,6 +88,7 @@
         stubData.questions[examId][question.id] = question;
 
         res.json(question);
+        saveData();
     });
 
     app.put('/api/exams/:examId/questions/:id', function (req, res) {
@@ -84,6 +98,7 @@
         stubData.questions[examId] = stubData.questions[examId] || {};
         stubData.questions[examId][id] = req.body;
         res.json(req.body);
+        saveData();
     });
 
     function hashToArray(hash) {

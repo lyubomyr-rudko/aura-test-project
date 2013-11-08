@@ -20,15 +20,22 @@ define([
         },
 
         getExamQuestions: function () {
-            this.questions.fetch();    
+            this.questions.fetch();
         },
 
         validate: function (attr) {
             if (!attr.title) {
                 return "Title is a required field";
             }
+        },
+        //it is possible to resive non-standart response (not just an object itself, but something else)
+        parse: function (response) {
+            return response;
+        },
+        //also we could control what we send to the server - not necessarily the model's data, but maybe some calculation on the data
+        toJSON: function () {
+            return this.attributes;
         }
-
         // url: 'api/exams'
     });
 
