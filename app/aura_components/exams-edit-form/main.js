@@ -23,7 +23,7 @@ define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, 
         },
 
         onSubmit: function(e) {
-            var that = this, 
+            var that = this,
                 examTitleField = this.$el.find('input[name=title]'),
                 examDescriptionField = this.$el.find('input[name=title]'),
                 examTitle = examTitleField.val(),
@@ -41,14 +41,14 @@ define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, 
             }
 
             ExamsCollection.singleInstance.create(exam).once('sync', function (model, response, collection) {
-                if (response.success) {
+                if (response.id) {
                     //for on-success - clear form data
                     that.resetForm();
 
                     that.sandbox.router.navigate('/exams', {trigger: true});
                 }
             });
-        }, 
+        },
 
         resetForm: function() {
             var examTitleField = this.$el.find('input[name=title]'),

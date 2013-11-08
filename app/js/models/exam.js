@@ -19,6 +19,10 @@ define([
             this.questions.create(question);
         },
 
+        getExamQuestions: function () {
+            this.questions.fetch();    
+        },
+
         validate: function (attr) {
             if (!attr.title) {
                 return "Title is a required field";

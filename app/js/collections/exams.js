@@ -9,8 +9,7 @@ define([
 		model: ExamModel,
 		url: '/api/exams',
 		initialize: function () {
-			this.on('change reset add remove', this.getQuestions, this);
-			this.getQuestions();
+			
 		},
 
 		getQuestions: function () {
@@ -18,8 +17,6 @@ define([
 
 			this.each(function (model) {
 				model.questions = new ExamQuestions([], {doc: model});
-				console.log(model.questions.url);
-				// debugger;
 				model.questions.fetch();
 			});
 		}
