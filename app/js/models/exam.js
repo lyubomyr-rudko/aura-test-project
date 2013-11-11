@@ -36,7 +36,7 @@ define([
         toJSON: function () {
             return this.attributes;
         }
-        // url: 'api/exams'
+
     });
 
     return ExamModel;

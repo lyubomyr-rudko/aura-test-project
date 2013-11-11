@@ -19,7 +19,15 @@ define([
 				model.questions = new ExamQuestions([], {doc: model});
 				model.questions.fetch();
 			});
-		}
+		},
+
+        comparator_v2: function (model) {
+            return model.get('title');
+        },
+
+        comparator: function (a, b) {
+            return a.get('id') - b.get('id');
+        }
 	});
 
 	ExamsCollection.singleInstance = new ExamsCollection();
