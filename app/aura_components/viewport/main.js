@@ -5,13 +5,18 @@ define(['module', 'underscore', 'backbone'], function(module, _, Backbone) {
 
     return {
         templates: ['tpl'],
-        
+
         initialize: function() {
             this.render();
             this.addRouterActions(this.sandbox.router);
             this.sandbox.utils.loadCssForModule(module);
+            this.sandbox.on('viewport:triggerEventCallback', function (event, cb, scope) {
+                if (this.componentActionEvent === event) {
+                    cb.apply(scope, this.componentActionEventParams);
+                }
+            }, this);
         },
-        
+
         render: function() {
             this.html(this.renderTemplate('tpl'));
         },
@@ -22,23 +27,28 @@ define(['module', 'underscore', 'backbone'], function(module, _, Backbone) {
             router.on('route:home', function onHomeRoute () {
                 console.log('home route');
                 that.showLayoutItem('homepage');
-            });
+            })
 
             router.on('route:admin', function onAdminRoute (model, action, id) {
-                console.log('admin route', model, action, id);
-
                 if (model === 'exams' && !action && !id) {
-                    that.showLayoutItem('exams-list');
-                } else if (model === 'exams' && action === 'new' && !id) {
-                    that.showLayoutItem('exams-edit-form');
-                } else if (model === 'exams' && action === 'edit' && id) {
-                    console.log('edit is not implemented');
-                    that.showLayoutItem('homepage');
+                    that.triggerAdminRouteEvent('exams-list');
+                } else if (model === 'exams' && (action === 'new' || action === 'edit')) {
+                    that.triggerAdminRouteEvent('exams-edit-form', action, id);
                 }
             });
 
             this.itemsCache = {};
             Backbone.history.start();
+        },
+
+        triggerAdminRouteEvent: function (component, action, id) {
+            var componentActionEvent = component + (action ? ':' + action : '');
+
+            this.showLayoutItem(component);
+            this.sandbox.emit(componentActionEvent, id);
+
+            this.componentActionEvent = componentActionEvent;
+            this.componentActionEventParams = [id];
         },
 
         showLayoutItem: function (item) {

@@ -1,0 +1,12 @@
+.exams-list .caret-up {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: middle;
+  border-bottom: 4px solid #000000;
+  border-right: 4px solid transparent;
+  border-top: 0 dotted;
+  border-left: 4px solid transparent;
+  content: "";
+}

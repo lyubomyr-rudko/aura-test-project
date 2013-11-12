@@ -20,7 +20,22 @@ define({
         }
 
         app.sandbox.utils = {
-            loadCssForModule: loadCssForModule
+            loadCssForModule: loadCssForModule,
+            waitForSubscriberAndTriggerEvent: waitForSubscriberAndTriggerEvent
         };
+
+        function waitForSubscriberAndTriggerEvent (eventName, id, that) {
+            var i, len, events = that.sandbox._events;
+            //that.sandbox.on('examsEditForm:initEdit', function (id) {debugger;});
+            //that.sandbox.emit('examsEditForm:initEdit', id);
+            if (events && events.length) {
+                for (i = 0, len = events.length; i < len; i += 1) {
+
+
+                }
+            }
+        }
+
+        // that.sandbox.utils.waitForSubscriberAndTriggerEvent('examsEditForm:initEdit', id, that);
     }
 });

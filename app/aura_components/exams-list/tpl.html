@@ -1,4 +1,4 @@
-<div class="exam-edit-form">
+<div class="exams-list">
  <div class="container">
     <div class="row">
       <div class="col-md-10 col-md-offset-1">
@@ -10,6 +10,26 @@
                 <ul>
                     <% _.each(exams, function(exam) { %> <li><%= exam.title    %></li> <% }); %>
                 </ul>
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr class='success'>
+                            <th>Title <span class="caret caret-up"></span></th>
+                            <th colspan="2">Description</th>
+                        <tr>
+                    </thead>
+                    <tbody>
+                        <% _.each(exams, function(exam) { %> 
+                        <tr>
+                            <td><%= exam.title %></td>
+                            <td><%= exam.description %></td>
+                            <td>
+                                <a class="btn btn-primary" data-exam-edit-id="<%= exam.id %>"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+                                <a class="btn btn-danger btn-sm" data-exam-delete-id="<%= exam.id %>"><span class="glyphicon glyphicon-remove"></span> Delete</a>
+                            </td>
+                        </tr> 
+                        <% }); %>
+                    </tbody>
+                </table>
             </div>
         </div>
       </div>

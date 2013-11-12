@@ -12,20 +12,39 @@ define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, 
                 }
             }
         },
-        
+
         initialize: function() {
             this.render();
             this.sandbox.utils.loadCssForModule(module);
+            this.sandbox.on('exams-edit-form:edit', this.initEdit, this);
+            this.sandbox.emit('viewport:triggerEventCallback', 'exams-edit-form:edit', this.initEdit, this);
         },
-        
+
         render: function() {
             this.html(this.renderTemplate('tpl', {title: 'Hello'}));
+        },
+
+        initEdit: function (id) {
+            ExamsCollection.singleInstance.fetchIf(_.bind(function () {
+                debugger;
+                var editedRecord = ExamsCollection.singleInstance.get(id),
+                    examTitleField = this.$el.find('input[name=title]'),
+                    examDescriptionField = this.$el.find('textarea[name=description]');
+
+                console.log('initEdit called on examsEditForm');
+
+                if (editedRecord) {
+                    examDescriptionField.val(editedRecord.get('description'));
+                    examTitleField.val(editedRecord.get('title'));
+                    this.editedRecord = editedRecord;
+                }
+            }, this));
         },
 
         onSubmit: function(e) {
             var that = this,
                 examTitleField = this.$el.find('input[name=title]'),
-                examDescriptionField = this.$el.find('input[name=title]'),
+                examDescriptionField = this.$el.find('input[name=description]'),
                 examTitle = examTitleField.val(),
                 examDescription = examDescriptionField.val(),
                 exam = {
@@ -40,11 +59,16 @@ define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, 
                 examTitleField.parent().removeClass('has-error');
             }
 
-            ExamsCollection.singleInstance.create(exam).once('sync', function (model, response, collection) {
-                if (response.id) {
-                    //for on-success - clear form data
-                    that.resetForm();
+            if (this.editedRecord) {
+                this.editedRecord.set(exam);
+                ExamsCollection.singleInstance.sync();
+            } else {
+                ExamsCollection.singleInstance.create(exam);
+            }
 
+            ExamsCollection.singleInstance.once('sync', function (model, response, collection) {
+                if (response.id) {
+                    that.resetForm();
                     that.sandbox.router.navigate('/exams', {trigger: true});
                 }
             });
@@ -56,6 +80,7 @@ define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, 
 
             examTitleField.val('');
             examDescriptionField.val('');
+            this.editedRecord = null;
         }
     };
 });

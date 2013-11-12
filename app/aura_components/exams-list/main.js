@@ -1,14 +1,27 @@
-define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, module, _) {
+define(['collections/exams', 'module', 'underscore', 'jquery'], function(ExamsCollection, module, _, $) {
     return {
         templates: ['tpl'],
         View: {
-            events: {}
+            events: {
+                'click a[data-exam-edit-id]': function (e) {
+                    var button = $(e.currentTarget),
+                        id = button.attr('data-exam-edit-id');
+
+                    this.sandbox.router.navigate('/exams/edit/' + id, {trigger: true});
+                },
+                'click a[data-exam-delete-id]': function (e) {
+                    var button = $(e.currentTarget),
+                        id = button.attr('data-exam-edit-id');
+                }
+            }//ExamsCollection.singleInstance.sort();
         },
         
         initialize: function() {
             this.render();
             this.sandbox.utils.loadCssForModule(module);
+
             ExamsCollection.singleInstance.on('change reset add remove', this.refreshList, this);
+            
             ExamsCollection.singleInstance.fetch();
         },
 
