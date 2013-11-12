@@ -19,7 +19,7 @@ define({
     // Injecting a Backbone view in the Component just before initialization.
     // This View's class will be built and cached this first time the component is included.
     app.components.before('initialize', function(options) {
-      var View = Views[options.ref]
+      var View = Views[options.ref];
       if (!View) {
         Views[options.ref] = View = Backbone.View.extend(this.View);
       }

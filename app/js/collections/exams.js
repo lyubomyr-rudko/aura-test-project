@@ -27,7 +27,21 @@ define([
         },
 
         comparator: function (a, b) {
-            return a.get('title') < b.get('title') ? -1 : 1;
+            var defaultSortField = 'title',
+                res = a.get(this.sortField || defaultSortField) < b.get(this.sortField || defaultSortField) ? -1 : 1;
+
+                if (this.sortAscending) {
+                    res = -res;
+                }
+
+                return res;
+        },
+
+        customSort: function (conf) {
+            this.sortField = conf.field;
+            this.sortAscending  = conf.ascending ;
+
+            this.sort();
         },
 
         fetchIf: function (cb) {

@@ -34,8 +34,6 @@ define(['module', 'underscore', 'backbone'], function(module, _, Backbone) {
                     that.triggerAdminRouteEvent('exams-list');
                 } else if (model === 'exams' && (action === 'new' || action === 'edit')) {
                     that.triggerAdminRouteEvent('exams-edit-form', action, id);
-                } else if (model === 'exams' && action === 'delete') {
-                    that.triggerAdminRouteEvent('exams-delete-form', null, id);
                 }
             });
 

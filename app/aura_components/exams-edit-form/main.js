@@ -16,6 +16,7 @@ define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, 
         initialize: function() {
             this.render();
             this.sandbox.utils.loadCssForModule(module);
+            this.sandbox.on('exams-edit-form:new', this.resetForm, this);
             this.sandbox.on('exams-edit-form:edit', this.initEdit, this);
             this.sandbox.emit('viewport:triggerEventCallback', 'exams-edit-form:edit', this.initEdit, this);
         },
@@ -75,7 +76,7 @@ define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, 
 
         resetForm: function() {
             var examTitleField = this.$el.find('input[name=title]'),
-                examDescriptionField = this.$el.find('input[name=title]');
+                examDescriptionField = this.$el.find('textarea[name=description]');
 
             examTitleField.val('');
             examDescriptionField.val('');

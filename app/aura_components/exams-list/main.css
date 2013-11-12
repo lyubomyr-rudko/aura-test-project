@@ -10,3 +10,14 @@
   border-left: 4px solid transparent;
   content: "";
 }
+
+.exams-list .result-alert {
+    position:fixed;
+    top:20px;
+    left:50%;
+    margin-left: -100px;
+    margin-bottom:0;
+    font-size:1.2em;
+    padding:1em 1.3em;
+    z-index:2000;
+}
