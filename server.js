@@ -23,7 +23,7 @@
         app.use(express.bodyParser());
         app.use(express['static'](__dirname + '/app'));
     });
-    
+
     getData();
 
     stubData = stubData || {
@@ -55,17 +55,25 @@
         saveData();
     });
 
-    app.put('api/exams/:id', function (req, res) {
-        stubData.exam[req.params.id] = req.body;
+    app.put('/api/exams/:id', function (req, res) {
+        stubData.exams[req.params.id] = req.body;
         res.json(req.body);
         saveData();
     });
-    
+
+    app.del('/api/exams/:id', function (req, res) {
+        var exam = stubData.exams[req.params.id];
+
+        delete stubData.exams[req.params.id];
+        res.json(exam);
+        saveData();
+    });
+
     app.get('/api/exams', function (req, res) {
         var result;
 
         result = hashToArray(stubData.exams);
-        
+
         res.json(result);
     });
 

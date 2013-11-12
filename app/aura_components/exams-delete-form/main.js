@@ -16,26 +16,24 @@ define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, 
         initialize: function() {
             this.render();
             this.sandbox.utils.loadCssForModule(module);
-            this.sandbox.on('exams-edit-form:edit', this.initEdit, this);
-            this.sandbox.emit('viewport:triggerEventCallback', 'exams-edit-form:edit', this.initEdit, this);
+            this.sandbox.on('exams-delete-form', this.initDelete, this);
+            this.sandbox.emit('viewport:triggerEventCallback', 'exams-delete-form', this.initDelete, this);
         },
 
         render: function() {
             this.html(this.renderTemplate('tpl', {title: 'Hello'}));
         },
 
-        initEdit: function (id) {
+        initDelete: function (id) {
             ExamsCollection.singleInstance.fetchIf(_.bind(function () {
-                var editedRecord = ExamsCollection.singleInstance.get(id),
-                    examTitleField = this.$el.find('input[name=title]'),
-                    examDescriptionField = this.$el.find('textarea[name=description]');
+                var deletedRecord = ExamsCollection.singleInstance.get(id),
+                    confirmationTextEl = this.$el.find('span[data-placeholder=title]');
 
-                console.log('initEdit called on examsEditForm');
+                console.log('initDelete called on examsDeleteForm');
 
-                if (editedRecord) {
-                    examDescriptionField.val(editedRecord.get('description'));
-                    examTitleField.val(editedRecord.get('title'));
-                    this.editedRecord = editedRecord;
+                if (deletedRecord) {
+                    confirmationTextEl.html(deletedRecord.get('title'));
+                    this.deletedRecord = deletedRecord;
                 }
             }, this));
         },
@@ -58,9 +56,9 @@ define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, 
                 examTitleField.parent().removeClass('has-error');
             }
 
-            if (this.editedRecord) {
-                this.editedRecord.set(exam);
-                this.editedRecord.save();
+            if (this.deletedRecord) {
+                this.deletedRecord.set(exam);
+                this.deletedRecord.save();
             } else {
                 ExamsCollection.singleInstance.create(exam);
             }
@@ -79,7 +77,7 @@ define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, 
 
             examTitleField.val('');
             examDescriptionField.val('');
-            this.editedRecord = null;
+            this.deletedRecord = null;
         }
     };
 });

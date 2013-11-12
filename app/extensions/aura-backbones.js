@@ -1,12 +1,15 @@
 define({
   require: {
-    paths:  { 
+    paths:  {
       backbone:   'bower_components/backbone/backbone',
-      underscore: 'bower_components/underscore/underscore' 
+      underscore: 'bower_components/underscore/underscore',
+      bootbox: 'bower_components/bootbox/bootbox',
+      bootstrap: 'bower_components/bootstrap/dist/js/bootstrap',
     },
-    shim:   { backbone: { exports: 'Backbone', deps: ['underscore', 'jquery'] } }
+    shim:   { backbone: { exports: 'Backbone', deps: ['underscore', 'jquery'] },
+              bootbox: { exports: 'Bootbox', deps: ['underscore', 'jquery'] }  }
   },
-  
+
   initialize: function(app) {
     var Backbone = require('backbone');
     app.core.mvc =  Backbone;

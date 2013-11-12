@@ -11,17 +11,19 @@ define(['collections/exams', 'module', 'underscore', 'jquery'], function(ExamsCo
                 },
                 'click a[data-exam-delete-id]': function (e) {
                     var button = $(e.currentTarget),
-                        id = button.attr('data-exam-edit-id');
+                        id = button.attr('data-exam-delete-id');
+
+                    this.sandbox.router.navigate('/exams/delete/' + id, {trigger: true});
                 }
             }//ExamsCollection.singleInstance.sort();
         },
-        
+
         initialize: function() {
             this.render();
             this.sandbox.utils.loadCssForModule(module);
 
             ExamsCollection.singleInstance.on('change reset add remove', this.refreshList, this);
-            
+
             ExamsCollection.singleInstance.fetch();
         },
 
