@@ -6,6 +6,7 @@
     "backbone.localStorage": "latest",
     "backbone": "1.1.0",
     "bootstrap": "3.0.0",
-    "bootbox": "~4.1.0"
+    "bootbox": "~4.1.0",
+    "backbone.stickit": "~0.6.3"
   }
 }

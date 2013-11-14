@@ -6,7 +6,7 @@ define([
     //'Bootbox' //TODO: add bootbox dependancy here - why it does not work?
 ], function(ExamsCollection, module, _, $) {
     return {
-        templates: ['tpl'],
+        templates: 'tpl',
         View: {
             events: {
                 'click a[data-exam-edit-id]': function (e) {
