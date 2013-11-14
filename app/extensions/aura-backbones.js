@@ -5,9 +5,11 @@ define({
       underscore: 'bower_components/underscore/underscore',
       bootbox: 'bower_components/bootbox/bootbox',
       bootstrap: 'bower_components/bootstrap/dist/js/bootstrap',
+      stickit: 'bower_components/backbone.stickit/backbone.stickit'
     },
     shim:   { backbone: { exports: 'Backbone', deps: ['underscore', 'jquery'] },
-              bootbox: { exports: 'Bootbox', deps: ['underscore', 'jquery'] }  }
+              bootbox: { exports: 'Bootbox', deps: ['underscore', 'jquery'] },
+              stickit: { exports: 'Stickit', deps: ['backbone']}  }
   },
 
   initialize: function(app) {

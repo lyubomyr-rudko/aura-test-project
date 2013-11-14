@@ -19,13 +19,13 @@ define([
             this.questions.create(question);
         },
 
-        getExamQuestions: function () {
+        fetchExamQuestions: function () {
             this.questions.fetch();
         },
 
         validate: function (attr) {
             if (!attr.title) {
-                return "Title is a required field";
+                return "Title is required";
             }
         },
         //it is possible to resive non-standart response (not just an object itself, but something else)

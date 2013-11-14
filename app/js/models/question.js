@@ -1,16 +1,35 @@
 define([
-	'underscore',
-	'backbone',
-	'models/option',
-	'collections/options'
+    'underscore',
+    'backbone',
+    'models/option',
+    'collections/options'
 ], function (_, Backbone, OptionModel, QuestionOptions) {
-	'use strict';
+    'use strict';
 
-	var QuestionModel = Backbone.Model.extend({
-		initialize: function () {
-			//this.questionOptions = new QuestionOptions();
-		} 
-	});
+    var QuestionModel = Backbone.Model.extend({
 
-	return QuestionModel;
+        defaults: {
+            text: ''
+        },
+
+        initialize: function () {
+            this.questionOptions = new QuestionOptions([], doc: this);
+        },
+
+        addQuestionnOption: function (option) {
+            this.questionOptions.create(option);
+        },
+
+        fetchQuestionOptions: function () {
+            this.questionOptions.fetch();
+        },
+
+        validate: function (attr) {
+            if (!attr.text) {
+                return "Question text is required";
+            }
+        }
+    });
+
+    return QuestionModel;
 });
