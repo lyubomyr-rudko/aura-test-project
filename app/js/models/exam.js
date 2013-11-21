@@ -15,12 +15,22 @@ define([
             this.questions = new ExamQuestions([], {doc: this});
         },
 
-        addExamQuestion: function (question) {
-            this.questions.create(question);
+        getExamQuestions: function () {
+            return this.questions;
         },
 
-        fetchExamQuestions: function () {
-            this.questions.fetch();
+        addExamQuestion: function (question) {
+            this.questions.create(question);
+            return this.questions;
+        },
+
+        fetchExamQuestions: function (cb) {
+            if (cb) {
+                this.questions.fetchIf(cb);
+            } else {
+                this.questions.fetch();
+            }
+            return this.questions;
         },
 
         validate: function (attr) {

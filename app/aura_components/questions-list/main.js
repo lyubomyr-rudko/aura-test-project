@@ -1,23 +1,25 @@
 define([
+    'collections/questions',
     'collections/exams',
     'module',
     'underscore',
     'jquery'
     //'Bootbox' //TODO: add bootbox dependancy here - why it does not work?
-], function(ExamsCollection, module, _, $) {
+], function(ExamQuestions, ExamsCollection, module, _, $) {
     return {
         templates: 'tpl',
         View: {
             events: {
-                'click a[data-exam-edit-id]': function (e) {
+                'click a[data-question-edit-id]': function (e) {
                     var button = $(e.currentTarget),
-                        id = button.attr('data-exam-edit-id');
+                        id = button.attr('data-question-edit-id'),
+                        examId = this.component.examModel.get('id');
 
-                    this.sandbox.router.navigate('/exams/edit/' + id, {trigger: true});
+                    this.sandbox.router.navigate('/exams/' + examId + '/questions/' + id + '/edit', {trigger: true});
                 },
-                'click a[data-exam-delete-id]': function (e) {
+                'click a[data-question-delete-id]': function (e) {
                     var button = $(e.currentTarget),
-                        id = button.attr('data-exam-delete-id');
+                        id = button.attr('data-question-delete-id');
 
                     this.component.showDeleteConfirmation(id);
                 },
@@ -27,33 +29,66 @@ define([
                     this.sortInfo = this.sortInfo || {};
                     this.sortInfo.field = 'title';
                     this.sortInfo.ascending  = !this.sortInfo.ascending;
-                    ExamsCollection.singleInstance.customSort(this.sortInfo);
+                    ExamQuestions.singleInstance.customSort(this.sortInfo);
                     this.component.refreshList();
 
                     element = this.$el.find('a[data-action=title-sort] span');
                     element.toggleClass('caret-up', this.sortInfo.ascending);
                 }
-            }//ExamsCollection.singleInstance.sort();
+            }//ExamQuestions.singleInstance.sort();
         },
 
         initialize: function() {
             this.render();
             this.sandbox.utils.loadCssForModule(module);
+            this.sandbox.on('questions-list', this.init, this);
+            this.sandbox.emit('viewport:triggerEventCallback', 'questions-list', this.init, this);
+        },
 
-            ExamsCollection.singleInstance.on('change reset add remove', this.refreshList, this);
+        init: function (id) {
+            var examModel = ExamsCollection.singleInstance.get(id);
 
-            ExamsCollection.singleInstance.fetch();
+            if (id === this.examId) {
+                return;
+            }
+
+            this.examId = id;
+            if (!examModel) {
+                ExamsCollection.singleInstance.fetchIf(_.bind(this.initAfterExamsFetch, this));
+            } else {
+                this.initAfterExamsFetch();
+            }
+        },
+
+        initAfterExamsFetch: function () {
+            var id = this.examId,
+                examModel = ExamsCollection.singleInstance.get(id);
+
+            if (examModel) {
+                this.examModel = examModel;
+                this.collection = this.examModel.getExamQuestions();
+                //TODO: check if events are not triggered twice or more times
+
+                this.collection.on('change reset add remove', this.refreshList, this);
+                this.collection.reset([]);
+                this.examModel.fetchExamQuestions();
+            }
+            /*
+            this.exam = ExamsCollection.singleInstance.get('1');
+            this.collection = this.exam.getExamQuestions();
+            this.collection.on('change reset add remove', this.refreshList, this);
+            this.exam.fetchExamQuestions();
+            */
+
         },
 
         //TODO: move this logic to a separate component
         showDeleteConfirmation: function (id) {
-            var deleteRecord = ExamsCollection.singleInstance.get(id),
+            var deleteRecord = this.collection.get(id),
                 resultElement = this.$el.find('.result-alert');
 
-            console.log('initDelete called on examsDeleteForm');
-
             if (deleteRecord) {
-                bootbox.confirm("Are you sure you want to delete the " + deleteRecord.get('titel') + "?", function(result) {
+                bootbox.confirm("Are you sure you want to delete the " + deleteRecord.get('questionText') + "?", function(result) {
                     if (result) {
                         deleteRecord.destroy({
                             success: function () {
@@ -69,11 +104,13 @@ define([
         },
 
         refreshList: function() {
-            this.render(ExamsCollection.singleInstance.toJSON());
+            this.render(this.examModel.toJSON(), this.collection.toJSON());
         },
 
-        render: function(examsList) {
-            this.html(this.renderTemplate('tpl', {exams: examsList || []}));
+        render: function(exam, questions) {
+            console.log('render called on question list');
+
+            this.html(this.renderTemplate('tpl', {exam: exam || {}, questions: questions || []}));
         }
     };
 });

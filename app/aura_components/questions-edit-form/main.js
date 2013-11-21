@@ -8,6 +8,7 @@ define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, 
                     return false;
                 },
                 'click a[data-action=cancel]': function(e) {
+                    this.sandbox.router.navigate('/exams/' + this.component.examRecord.get('id') + '/questions', {trigger: true});
                     this.component.resetForm();
                 }
             }
@@ -16,70 +17,100 @@ define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, 
         initialize: function() {
             this.render();
             this.sandbox.utils.loadCssForModule(module);
-            this.sandbox.on('exams-edit-form:new', this.resetForm, this);
-            this.sandbox.on('exams-edit-form:edit', this.initEdit, this);
-            this.sandbox.emit('viewport:triggerEventCallback', 'exams-edit-form:edit', this.initEdit, this);
+            this.sandbox.on('questions-edit-form:new', this.initNew, this);
+            this.sandbox.on('questions-edit-form:edit', this.initEdit, this);
+            this.sandbox.emit('viewport:triggerEventCallback', 'questions-edit-form:new', this.initNew, this);
+            this.sandbox.emit('viewport:triggerEventCallback', 'questions-edit-form:edit', this.initEdit, this);
         },
 
         render: function() {
             this.html(this.renderTemplate('tpl', {title: 'Hello'}));
         },
 
-        initEdit: function (id) {
+        initNew: function (conf) {
+            var id = conf.id;
+
+            console.log('initNew called on questions-edit-form');
+
+            this.resetForm();
+
             ExamsCollection.singleInstance.fetchIf(_.bind(function () {
-                var editedRecord = ExamsCollection.singleInstance.get(id),
-                    examTitleField = this.$el.find('input[name=title]'),
-                    examDescriptionField = this.$el.find('textarea[name=description]');
+                var examRecord = ExamsCollection.singleInstance.get(id),
+                    formTitleElement = this.$el.find('h3[class=panel-title]'),
+                    formTitle = 'Create New Question';
 
-                console.log('initEdit called on examsEditForm');
+                this.examRecord = examRecord;
+                this.questions = examRecord.getExamQuestions();//TODO: add here fetchExamQeuestions(cb) call
 
-                if (editedRecord) {
-                    examDescriptionField.val(editedRecord.get('description'));
-                    examTitleField.val(editedRecord.get('title'));
-                    this.editedRecord = editedRecord;
+                formTitleElement.html(formTitle);
+            }, this));
+
+        },
+
+        initEdit: function (conf) {
+            var examId = conf.id,
+                questionId = conf.qid;
+
+            console.log('initEdit called on questions-edit-form');
+
+            ExamsCollection.singleInstance.fetchIf(_.bind(function () {
+                var examRecord = ExamsCollection.singleInstance.get(examId);
+
+                this.questions = examRecord.getExamQuestions();
+                this.examRecord = examRecord;
+
+                if (examRecord) {
+                    this.questions.fetchIf(_.bind(function () {
+                            editedRecord = this.questions.get(questionId),
+                            questionTextField = this.$el.find('input[name=questionText]'),
+                            formTitleElement = this.$el.find('h3[class=panel-title]');
+
+                        console.log('initEdit called on questions-edit-form');
+
+                        if (editedRecord) {
+                            questionTextField.val(editedRecord.get('questionText'));
+                            formTitleElement.html('<small> editing </small>' + editedRecord.get('questionText'));
+                            this.editedRecord = editedRecord;
+                        }
+                    }, this));
                 }
             }, this));
         },
 
         onSubmit: function(e) {
             var that = this,
-                examTitleField = this.$el.find('input[name=title]'),
-                examDescriptionField = this.$el.find('textarea[name=description]'),
-                examTitle = examTitleField.val(),
-                examDescription = examDescriptionField.val(),
-                exam = {
-                    title: examTitle,
-                    description: examDescription
+                questionTextField = this.$el.find('input[name=questionText]'),
+                questionText = questionTextField.val(),
+                question = {
+                    questionText: questionText
                 };
 
-            if (!exam.title) {
-                examTitleField.parent().addClass('has-error').prop('title', 'This field is required');
+            if (!question.questionText) {
+                questionTextField.parent().addClass('has-error').prop('title', 'This field is required');
                 return;
             } else {
-                examTitleField.parent().removeClass('has-error');
+                questionTextField.parent().removeClass('has-error');
             }
 
             if (this.editedRecord) {
-                this.editedRecord.set(exam);
+                this.editedRecord.set(question);
                 this.editedRecord.save();
             } else {
-                ExamsCollection.singleInstance.create(exam);
+                this.questions.create(question);
             }
 
-            ExamsCollection.singleInstance.once('sync', function (model, response, collection) {
+            this.questions.once('sync', function (model, response, collection) {
                 if (response.id) {
                     that.resetForm();
-                    that.sandbox.router.navigate('/exams', {trigger: true});
+                    that.sandbox.router.navigate('/exams/' + that.examRecord.get('id') + '/questions', {trigger: true});
                 }
             });
         },
 
         resetForm: function() {
-            var examTitleField = this.$el.find('input[name=title]'),
-                examDescriptionField = this.$el.find('textarea[name=description]');
+            var examTitleField = this.$el.find('input[name=questionText]');
 
             examTitleField.val('');
-            examDescriptionField.val('');
             this.editedRecord = null;
         }
     };

@@ -109,6 +109,14 @@
         saveData();
     });
 
+    app.del('/api/exams/:examId/questions/:id', function (req, res) {
+        var question = stubData.questions[req.params.examId][req.params.id];
+
+        delete stubData.questions[req.params.examId][req.params.id];
+        res.json(question);
+        saveData();
+    });
+
     function hashToArray(hash) {
         var result = [],
             key,

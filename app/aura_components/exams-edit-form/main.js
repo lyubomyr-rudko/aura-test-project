@@ -22,20 +22,22 @@ define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, 
         },
 
         render: function() {
-            this.html(this.renderTemplate('tpl', {title: 'Hello'}));
+            this.html(this.renderTemplate('tpl'));
         },
 
         initEdit: function (id) {
             ExamsCollection.singleInstance.fetchIf(_.bind(function () {
                 var editedRecord = ExamsCollection.singleInstance.get(id),
                     examTitleField = this.$el.find('input[name=title]'),
-                    examDescriptionField = this.$el.find('textarea[name=description]');
+                    examDescriptionField = this.$el.find('textarea[name=description]'),
+                    formTitleElement = this.$el.find('h3[class=panel-title]');
 
                 console.log('initEdit called on examsEditForm');
 
                 if (editedRecord) {
                     examDescriptionField.val(editedRecord.get('description'));
                     examTitleField.val(editedRecord.get('title'));
+                    formTitleElement.html('<small> editing </small>' + editedRecord.get('title'));
                     this.editedRecord = editedRecord;
                 }
             }, this));
@@ -76,10 +78,13 @@ define(['collections/exams', 'module', 'underscore'], function(ExamsCollection, 
 
         resetForm: function() {
             var examTitleField = this.$el.find('input[name=title]'),
-                examDescriptionField = this.$el.find('textarea[name=description]');
+                examDescriptionField = this.$el.find('textarea[name=description]'),
+                formTitle = 'Create New Exam ',
+                formTitleElement = this.$el.find('h3[class=panel-title]');
 
             examTitleField.val('');
             examDescriptionField.val('');
+            formTitleElement.html(formTitle);
             this.editedRecord = null;
         }
     };

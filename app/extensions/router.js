@@ -1,12 +1,13 @@
 define(['backbone'], function (Backbone) {
     "use strict";
-    var Router, 
+    var Router,
         router;
 
     Router = Backbone.Router.extend({
         routes: {
             '': 'home',
-            ':model(/:action)(/:id)': 'admin'
+            // ':model(/:id)(/:action)': 'admin'
+            ':model(/:id)(/:action)(/:qid)(/:qaction)(/:oid)(/:oaction)': 'admin'
 
             // ":widget/:action/:id":    "employee"
         }

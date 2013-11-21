@@ -9,11 +9,11 @@ define([
     var QuestionModel = Backbone.Model.extend({
 
         defaults: {
-            text: ''
+            questionText: ''
         },
 
         initialize: function () {
-            this.questionOptions = new QuestionOptions([], doc: this);
+            this.questionOptions = new QuestionOptions([], {doc: this});
         },
 
         addQuestionnOption: function (option) {
@@ -25,8 +25,8 @@ define([
         },
 
         validate: function (attr) {
-            if (!attr.text) {
-                return "Question text is required";
+            if (!attr.questionText) {
+                return "Question questionText is required";
             }
         }
     });

@@ -13,13 +13,19 @@ define([
                     var button = $(e.currentTarget),
                         id = button.attr('data-exam-edit-id');
 
-                    this.sandbox.router.navigate('/exams/edit/' + id, {trigger: true});
+                    this.sandbox.router.navigate('/exams/' + id + '/edit', {trigger: true});
                 },
                 'click a[data-exam-delete-id]': function (e) {
                     var button = $(e.currentTarget),
                         id = button.attr('data-exam-delete-id');
 
                     this.component.showDeleteConfirmation(id);
+                },
+                'click a[data-exam-questions-id]': function (e) {
+                    var button = $(e.currentTarget),
+                        id = button.attr('data-exam-questions-id');
+
+                    this.sandbox.router.navigate('/exams/' + id + '/questions', {trigger: true});
                 },
                 'click a[data-action=title-sort]': function (e) {
                     var element;
@@ -53,7 +59,7 @@ define([
             console.log('initDelete called on examsDeleteForm');
 
             if (deleteRecord) {
-                bootbox.confirm("Are you sure you want to delete the " + deleteRecord.get('titel') + "?", function(result) {
+                bootbox.confirm("Are you sure you want to delete the " + deleteRecord.get('title') + "?", function(result) {
                     if (result) {
                         deleteRecord.destroy({
                             success: function () {

@@ -27,13 +27,17 @@ define(['module', 'underscore', 'backbone'], function(module, _, Backbone) {
             router.on('route:home', function onHomeRoute () {
                 console.log('home route');
                 that.showLayoutItem('homepage');
-            })
+            });
 
-            router.on('route:admin', function onAdminRoute (model, action, id) {
+            router.on('route:admin', function onAdminRoute (model, id, action, qid, qaction, oid, oaction) {
                 if (model === 'exams' && !action && !id) {
                     that.triggerAdminRouteEvent('exams-list');
-                } else if (model === 'exams' && (action === 'new' || action === 'edit')) {
-                    that.triggerAdminRouteEvent('exams-edit-form', action, id);
+                } else if (model === 'exams' && (id === 'new' || action === 'edit')) {
+                    that.triggerAdminRouteEvent('exams-edit-form', action || id, id);
+                } else if (model === 'exams' && action === 'questions' && !qid) {
+                    that.triggerAdminRouteEvent('questions-list', null, id);
+                } else if (model === 'exams' && action === 'questions' && (qid === 'new' || qaction === 'edit')) {
+                    that.triggerAdminRouteEvent('questions-edit-form', qaction || qid, {id: id, qid: qid, qaction: qaction});
                 }
             });
 
