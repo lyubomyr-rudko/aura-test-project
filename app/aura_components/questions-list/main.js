@@ -27,9 +27,9 @@ define([
                     var element;
 
                     this.sortInfo = this.sortInfo || {};
-                    this.sortInfo.field = 'title';
+                    this.sortInfo.field = 'questionText';
                     this.sortInfo.ascending  = !this.sortInfo.ascending;
-                    ExamQuestions.singleInstance.customSort(this.sortInfo);
+                    this.component.collection.customSort(this.sortInfo);
                     this.component.refreshList();
 
                     element = this.$el.find('a[data-action=title-sort] span');

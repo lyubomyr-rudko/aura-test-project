@@ -1,7 +1,9 @@
 requirejs.config({
 	paths: {
-		'models': '../js/models',
-		'collections': '../js/collections'
+		'models': '/js/models',
+		'collections': '/js/collections',
+    'base': '/js/base',
+    'mixins': '/js/mixins'
 	}
 });
 

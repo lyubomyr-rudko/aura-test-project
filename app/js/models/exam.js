@@ -1,11 +1,12 @@
 define([
     'underscore',
     'backbone',
-    'collections/questions'
-], function (_, Backbone, ExamQuestions) {
+    'collections/questions',
+    'base/model'
+], function (_, Backbone, ExamQuestions, BaseModel) {
     'use strict';
 
-    var ExamModel = Backbone.Model.extend({
+    var ExamModel = BaseModel.extend({
 
         defaults: {
             title: ''

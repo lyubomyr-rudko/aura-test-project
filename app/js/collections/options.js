@@ -1,9 +1,10 @@
 define([
-	'backbone', 
+	'backbone',
 	'underscore',
-	'models/option'
-], function (Backbone, _, OptionModel) {
-	var QuestionOptions = Backbone.Collection.extend({
+	'models/option',
+	'base/collection'
+], function (Backbone, _, OptionModel, BaseCollection) {
+	var QuestionOptions = BaseCollection.extend({
 		model: OptionModel,
 		initialize: function (models, options) {
 			this.doc = options.doc;

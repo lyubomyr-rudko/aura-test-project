@@ -2,11 +2,12 @@ define([
     'underscore',
     'backbone',
     'models/option',
-    'collections/options'
-], function (_, Backbone, OptionModel, QuestionOptions) {
+    'collections/options',
+    'base/model'
+], function (_, Backbone, OptionModel, QuestionOptions, BaseModel) {
     'use strict';
 
-    var QuestionModel = Backbone.Model.extend({
+    var QuestionModel = BaseModel.extend({
 
         defaults: {
             questionText: ''
