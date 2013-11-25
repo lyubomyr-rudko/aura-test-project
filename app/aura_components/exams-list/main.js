@@ -23,7 +23,7 @@ define([
                     var button = $(e.currentTarget),
                         id = button.attr('data-exam-delete-id');
 
-                    this.component.showDeleteConfirmation(id);
+                    this.component.deleteExam(id);
                 },
                 'click a[data-exam-questions-id]': function (e) {
                     var button = $(e.currentTarget),
@@ -61,13 +61,6 @@ define([
                 nameForConirmation = recordToDelete.get('title');
 
             console.log('deleteExam called on ');
-
-            this.showDeleteConfirmation(recordToDelete, nameForConirmation);
-        },
-
-        deleteQuestion: function (id) {
-            var recordToDelete = this.collection.get(id),
-                nameForConirmation = recordToDelete.get('questionText');
 
             this.showDeleteConfirmation(recordToDelete, nameForConirmation);
         },

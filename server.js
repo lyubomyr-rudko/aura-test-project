@@ -9,131 +9,130 @@
         host = 'localhost',
         port = 8188,
         stubData,
-        filename = "./dataStore.json";
+        filename = "./dataStore.json",
+        async = require('async'),
+        hbs = require('express-hbs'),
+        baucis = require('baucis'),
+        socketIO = require('socket.io'),
+        mongoose = require('mongoose'),
+        db;
 
-    function saveData () {
-        fs.writeFile( filename, JSON.stringify( stubData ), "utf8", function () {} );
-    }
 
-    function getData () {
-        stubData = require(filename);
-    }
 
-    app.configure(function () {
-        app.use(express.bodyParser());
-        app.use(express['static'](__dirname + '/app'));
-    });
+    // start mongoose
+    mongoose.connect('mongodb://localhost/sit');
+    db = mongoose.connection;
 
-    getData();
+    db.on('error', console.error.bind(console, 'connection error:'));
+    db.once('open', function callback () {
+        var examSchema,
+            questionSchema,
+            optionsSchema,
+            Exam,
+            Question;
+        //schemas
+        examSchema = mongoose.Schema({
+            title: String,
+            description: String
+        });
 
-    stubData = stubData || {
-        exams: {
-            1: {title: 'Math Exam', id: 1},
-            2: {title: 'History Exam', id: 2}
-        },
-        questions: {
-            1: {
-                1: {questionText: 'What will 2 + 2 * 2 be equal to?'},
-                2: {questionText: 'What to add to 4 to get 17?'}
-            },
-            2: {
-                3: {questionText: 'Where was Taras Shevchenko born?'},
-                4: {questionText: 'When have Ukraien got its independance from USSR?'}
-            }
-        },
-        nextExamId: 3,
-        nextQuestionId: 5
-    };
+        questionSchema = mongoose.Schema({
+            questionText: String,
+            examId: String
+        });
 
-    app.post('/api/exams', function (req, res) {
-        // res.end(JSON.stringify({success: true}));
-        var exam = req.body;
-        //TODO: add backend validation here
-        exam.id = stubData.nextExamId++;
-        stubData.exams[exam.id] = exam;
-        res.json(exam);
-        saveData();
-    });
+        examSchema.methods.toJSON = function () {
+            var o = this.toObject();
 
-    app.put('/api/exams/:id', function (req, res) {
-        stubData.exams[req.params.id] = req.body;
-        res.json(req.body);
-        saveData();
-    });
+            o.id = o._id;
+            delete o._id;
 
-    app.del('/api/exams/:id', function (req, res) {
-        var exam = stubData.exams[req.params.id];
+            return o;
+        };
+        questionSchema.methods.toJSON = examSchema.methods.toJSON;
 
-        delete stubData.exams[req.params.id];
-        res.json(exam);
-        saveData();
-    });
+        //models
+        Exam = mongoose.model('Exam', examSchema);
+        Question = mongoose.model('Question', questionSchema);
 
-    app.get('/api/exams', function (req, res) {
-        var result;
 
-        result = hashToArray(stubData.exams);
+        //API
+        app.post('/api/exams', function (req, res) {
+            var exam = new Exam(req.body);
+            //TODO: add backend validation here
+            exam.save(function (err, exam) {
+                if (err) { res.json(500, err); return; }
 
-        res.json(result);
-    });
+                res.json(exam);
+            });
+        });
 
-    //http://localhost:8188/api/exams/1/questions
-    app.get('/api/exams/:examId/questions', function (req, res) {
-        var questions = stubData.questions[req.params.examId],
-            result;
+        app.put('/api/exams/:id', function (req, res) {
+            Exam.update({_id: req.params.id}, req.body, {upsert: true}, function (err, exam) {
+                if (err) { res.json(500, err); return; }
 
-        result = hashToArray(questions);
+                res.json(req.body);
+            });
+        });
 
-        res.json(result);
-    });
+        app.del('/api/exams/:id', function (req, res) {
+            Exam.remove({_id: req.params.id}, function (err, exam) {
+                if (err) { res.json(500, err); return; }
 
-    app.post('/api/exams/:examId/questions', function (req, res) {
-        var question = req.body,
-            examId = req.params.examId;
+                res.json({});
+            });
+        });
 
-        question.id = stubData.nextQuestionId++;
-        stubData.questions[examId] = stubData.questions[examId] || {};
-        stubData.questions[examId][question.id] = question;
+        app.get('/api/exams', function (req, res) {
+            Exam.find({}, function (err, exams) {
+                if (err) { res.json(500, err); return; }
 
-        res.json(question);
-        saveData();
-    });
+                res.json(exams);
+            });
+        });
 
-    app.put('/api/exams/:examId/questions/:id', function (req, res) {
-        var examId = req.params.examId,
-            id = req.params.id;
+        //http://localhost:8188/api/exams/1/questions
+        app.get('/api/exams/:examId/questions', function (req, res) {
+            Question.find({examId: req.params.examId}, function (err, questions) {
+                if (err) { res.json(500, err); return; }
 
-        stubData.questions[examId] = stubData.questions[examId] || {};
-        stubData.questions[examId][id] = req.body;
-        res.json(req.body);
-        saveData();
-    });
+                res.json(questions);
+            });
+        });
 
-    app.del('/api/exams/:examId/questions/:id', function (req, res) {
-        var question = stubData.questions[req.params.examId][req.params.id];
+        app.post('/api/exams/:examId/questions', function (req, res) {
+            var question = new Question({questionText: req.body.questionText, examId: req.params.examId});
 
-        delete stubData.questions[req.params.examId][req.params.id];
-        res.json(question);
-        saveData();
-    });
+            question.save(function (err, q) {
+                if (err) { res.json(500, err); return; }
 
-    function hashToArray(hash) {
-        var result = [],
-            key,
-            valye;
+                res.json(q);
+            });
+        });
 
-        hash = hash || {};
+        app.put('/api/exams/:examId/questions/:id', function (req, res) {
+            var examId = req.params.examId,
+                id = req.params.id;
 
-        for (key in hash) {
-            if (hash.hasOwnProperty(key)) {
-                result[result.length] = hash[key];
-            }
-        }
-        return result;
-    }
+            Question.update({_id: id}, req.body, {upset: true}, function (err, question) {
+                if (err) { res.json(500, err); return; }
 
-    app.listen(port, host, function () {
-        console.log('Server running on: ' + host + ':' + port);
+                res.json(req.body);
+            });
+        });
+
+        app.del('/api/exams/:examId/questions/:id', function (req, res) {
+            Question.remove({_id: req.params.id}, function (err) {
+                if (err) { res.json(500, err); return; }
+
+                res.json({});
+            });
+        });
+
+        app.listen(port, host, function () {
+            console.log('Server running on: ' + host + ':' + port);
+        });
+
     });
 
 }());
