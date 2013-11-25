@@ -1,11 +1,15 @@
 define([
     'collections/exams',
+    'mixins/component',
     'module',
     'underscore',
     'jquery'
     //'Bootbox' //TODO: add bootbox dependancy here - why it does not work?
-], function(ExamsCollection, module, _, $) {
-    return {
+], function(ExamsCollection, componentMixin, module, _, $) {
+    var componentConfig,
+        res;
+
+    componentConfig = {
         templates: 'tpl',
         View: {
             events: {
@@ -52,26 +56,20 @@ define([
         },
 
         //TODO: move this logic to a separate component
-        showDeleteConfirmation: function (id) {
-            var deleteRecord = ExamsCollection.singleInstance.get(id),
-                resultElement = this.$el.find('.result-alert');
+        deleteExam: function (id) {
+            var recordToDelete = ExamsCollection.singleInstance.get(id),
+                nameForConirmation = recordToDelete.get('title');
 
-            console.log('initDelete called on examsDeleteForm');
+            console.log('deleteExam called on ');
 
-            if (deleteRecord) {
-                bootbox.confirm("Are you sure you want to delete the " + deleteRecord.get('title') + "?", function(result) {
-                    if (result) {
-                        deleteRecord.destroy({
-                            success: function () {
-                                var text = 'Delete was successful';
+            this.showDeleteConfirmation(recordToDelete, nameForConirmation);
+        },
 
-                                resultElement.find("span").html(text);
-                                resultElement.fadeIn().delay(4000).fadeOut();
-                            }
-                        });
-                    }
-                });
-            }
+        deleteQuestion: function (id) {
+            var recordToDelete = this.collection.get(id),
+                nameForConirmation = recordToDelete.get('questionText');
+
+            this.showDeleteConfirmation(recordToDelete, nameForConirmation);
         },
 
         refreshList: function() {
@@ -82,4 +80,9 @@ define([
             this.html(this.renderTemplate('tpl', {exams: examsList || []}));
         }
     };
+
+    res = _.extend({}, componentMixin);
+    res = _.extend(res, componentConfig);
+
+    return res;
 });

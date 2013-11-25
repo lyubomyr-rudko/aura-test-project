@@ -1,12 +1,17 @@
 define([
     'collections/questions',
     'collections/exams',
+    'mixins/component',
     'module',
     'underscore',
     'jquery'
     //'Bootbox' //TODO: add bootbox dependancy here - why it does not work?
-], function(ExamQuestions, ExamsCollection, module, _, $) {
-    return {
+], function(ExamQuestions, ExamsCollection, componentMixin, module, _, $) {
+
+    var componentConfig,
+        res;
+
+    componentConfig = {
         templates: 'tpl',
         View: {
             events: {
@@ -21,7 +26,7 @@ define([
                     var button = $(e.currentTarget),
                         id = button.attr('data-question-delete-id');
 
-                    this.component.showDeleteConfirmation(id);
+                    this.component.deleteQuestion(id);
                 },
                 'click a[data-action=title-sort]': function (e) {
                     var element;
@@ -73,34 +78,13 @@ define([
                 this.collection.reset([]);
                 this.examModel.fetchExamQuestions();
             }
-            /*
-            this.exam = ExamsCollection.singleInstance.get('1');
-            this.collection = this.exam.getExamQuestions();
-            this.collection.on('change reset add remove', this.refreshList, this);
-            this.exam.fetchExamQuestions();
-            */
-
         },
 
-        //TODO: move this logic to a separate component
-        showDeleteConfirmation: function (id) {
-            var deleteRecord = this.collection.get(id),
-                resultElement = this.$el.find('.result-alert');
+        deleteQuestion: function (id) {
+            var recordToDelete = this.collection.get(id),
+                nameForConirmation = recordToDelete.get('questionText');
 
-            if (deleteRecord) {
-                bootbox.confirm("Are you sure you want to delete the " + deleteRecord.get('questionText') + "?", function(result) {
-                    if (result) {
-                        deleteRecord.destroy({
-                            success: function () {
-                                var text = 'Delete was successful';
-
-                                resultElement.find("span").html(text);
-                                resultElement.fadeIn().delay(4000).fadeOut();
-                            }
-                        });
-                    }
-                });
-            }
+            this.showDeleteConfirmation(recordToDelete, nameForConirmation);
         },
 
         refreshList: function() {
@@ -113,4 +97,9 @@ define([
             this.html(this.renderTemplate('tpl', {exam: exam || {}, questions: questions || []}));
         }
     };
+
+    res = _.extend({}, componentMixin);
+    res = _.extend(res, componentConfig);
+
+    return res;
 });
