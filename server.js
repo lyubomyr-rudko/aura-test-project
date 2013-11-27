@@ -27,9 +27,10 @@
     db.once('open', function callback () {
         var examSchema,
             questionSchema,
-            optionsSchema,
+            optionSchema,
             Exam,
-            Question;
+            Question,
+            OptionModel;
         //schemas
         examSchema = mongoose.Schema({
             title: String,
@@ -41,6 +42,12 @@
             examId: String
         });
 
+        optionSchema = mongoose.Schema({
+            optionText: String,
+            isCorrect: Boolean,
+            questionId: String
+        });
+
         examSchema.methods.toJSON = function () {
             var o = this.toObject();
 
@@ -50,10 +57,12 @@
             return o;
         };
         questionSchema.methods.toJSON = examSchema.methods.toJSON;
+        optionSchema.methods.toJSON = examSchema.methods.toJSON;
 
         //models
         Exam = mongoose.model('Exam', examSchema);
         Question = mongoose.model('Question', questionSchema);
+        OptionModel = mongoose.model('Option', optionSchema);
 
 
         //API
@@ -127,6 +136,50 @@
 
                 res.json({});
             });
+        });
+
+        //OptionModel
+        //http://localhost:8188/api/exams/1/questions
+        app.get('/api/questions/:questionId/options', function (req, res) {
+            OptionModel.find({questionId: req.params.questionId}, function (err, options) {
+                if (err) { res.json(500, err); return; }
+
+                res.json(options);
+            });
+        });
+
+        app.post('/api/questions/:questionId/options', function (req, res) {
+            var question = new Question({optionText: req.body.optionText, isCorrect: !!req.body.isCorrect, questionId: req.params.questionId});
+
+            question.save(function (err, option) {
+                if (err) { res.json(500, err); return; }
+
+                res.json(option);
+            });
+        });
+
+        app.put('/api/questions/:questionId/options/:id', function (req, res) {
+            var id = req.params.id;
+
+            Question.update({_id: id}, req.body, {upset: true}, function (err) {
+                if (err) { res.json(500, err); return; }
+
+                res.json(req.body);
+            });
+        });
+
+        app.del('/api/questions/:questionId/options/:id', function (req, res) {
+            Question.remove({_id: req.params.id}, function (err) {
+                if (err) { res.json(500, err); return; }
+
+                res.json({});
+            });
+        });
+
+
+        app.configure(function () {
+            app.use(express.bodyParser());
+            app.use(express['static'](__dirname + '/app'));
         });
 
         app.listen(port, host, function () {
